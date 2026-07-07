@@ -1,0 +1,31 @@
+export const colors = {
+  // Primary theme colors
+  primary: '#007AFF',
+  secondary: '#34C759',
+  background: '#FFFFFF',
+  surface: '#F8F9FA',
+  text: '#111827',
+  textSecondary: '#6B7280',
+  border: '#E5E7EB',
+  error: '#FF3B30',
+  success: '#34C759',
+  warning: '#FF9500',
+
+  // Additional colors from core/constants
+  WHITE: '#FFFFFF',
+  BLACK: '#000000',
+  infoColor: '#FFC358',
+  errorColor: '#ff0000ff',
+  successColor: '#00fa0dff',
+  warningColor: '#75B0FD',
+  black50: 'rgba(0,0,0,0.5)',
+  black40: 'rgba(0,0,0,0.4)',
+  black20: 'rgba(0,0,0,0.2)',
+  burntOrange: '#CC4E00',
+  overlayLight05: '#FFFFFF0D',
+  whiteOverlay80: '#FFFFFFCC',
+  whiteOverlay30: '#FFFFFF4D',
+  pastelRed: '#FF6262',
+  green: 'green',
+  lightGray: '#949DAD',
+};
