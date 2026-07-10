@@ -6,10 +6,13 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { fonts, colors } from '@theme/index';
-import { strings, emailRegex, passwordRegex } from '@shared/constants/index';
+import { strings } from '@shared/constants/index';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { LoginSchema, LoginFormData } from '@core/validators/auth.validators';
 import { ToastManager } from '@shared/utils/toast/ToastManager';
 import { useDispatch } from 'react-redux';
 import { useAuthNavigation } from '@app/navigation';
@@ -19,17 +22,11 @@ import { AuthData } from '@features/auth/types/api';
 import { appleIcon, googleIcon } from '@shared/assets/icons';
 import {
   AppleAuthProvider,
-  getAuth,
   GoogleAuthProvider,
   signInWithCredential,
   signOut,
 } from '@react-native-firebase/auth';
-import {
-  GoogleSignin,
-  SignInSuccessResponse,
-} from '@react-native-google-signin/google-signin';
-import { getMessaging, getToken } from '@react-native-firebase/messaging';
-import { getApp } from '@react-native-firebase/app';
+import { getToken } from '@react-native-firebase/messaging';
 import Logger from '@core/logger';
 import appleAuth from '@invertase/react-native-apple-authentication';
 import { initFCM } from '@core/permissions';
@@ -43,20 +40,29 @@ import {
 } from '@shared/components';
 import { loginUser } from '@features/auth/services';
 import { AppDispatch } from '@store';
+import { getSafeAuth, getSafeMessaging } from '@core/firebase';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 const LoginScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useAuthNavigation();
 
-  const emailRef = useRef<TextInput | null>(null);
-  const [email, setEmail] = useState('');
-  const [emailError, setEmailError] = useState('');
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
 
   const passwordRef = useRef<TextInput | null>(null);
-  const [password, setPassword] = useState('');
-  const [passwordSecure, setPasswordSecure] = useState(true);
-  const [passwordError, setPasswordError] = useState('');
-  const [deviceToken, setDeviceToken] = useState<string | null>('');
+  const [passwordSecure, setPasswordSecure] = React.useState(true);
+  const [deviceToken, setDeviceToken] = React.useState<string | undefined>('');
 
   useEffect(() => {
     const fetchFCM = async () => {
@@ -67,57 +73,15 @@ const LoginScreen = () => {
     fetchFCM();
   }, []);
 
-  useEffect(() => {
-    if (!email.trim()) setEmailError('');
-    else if (!emailRegex.test(email))
-      setEmailError(strings.pleaseEnterValidEmail);
-    else if (/[A-Z]/.test(email)) setEmailError(strings.emailLowercaseOnly);
-    else setEmailError('');
-  }, [email]);
-
   const clickToForgotPassword = async () => {
     navigation.navigateToForgotPassword();
-    setEmail('');
-    setPassword('');
+    reset();
     setPasswordSecure(true);
-    setEmailError('');
-    setPasswordError('');
   };
 
-  const handleUserLogin = async () => {
-    let valid = true;
+  const onSubmit = async (data: LoginFormData) => {
     Keyboard.dismiss();
 
-    if (!email.trim()) {
-      setEmailError(strings.pleaseEnterEmail);
-      valid = false;
-    } else if (!emailRegex.test(email)) {
-      setEmailError(strings.pleaseEnterValidEmail);
-      valid = false;
-    } else if (/[A-Z]/.test(email)) {
-      setEmailError(strings.emailLowercaseOnly);
-      valid = false;
-    } else {
-      setEmailError('');
-    }
-
-    if (!password.trim()) {
-      setPasswordError(strings.pleaseEnterPassword);
-      valid = false;
-    } else if (password.length < 6) {
-      setPasswordError(strings.confirmPasswordMinLength);
-      valid = false;
-    } else if (!passwordRegex.test(password)) {
-      setPasswordError(strings.changePasswordText);
-      valid = false;
-    } else if (/\s/.test(password)) {
-      setPasswordError(strings.passwordCannotContainSpaces);
-      valid = false;
-    } else {
-      setPasswordError('');
-    }
-
-    if (!valid) return;
     const tokenForPayload: string | undefined = deviceToken
       ? deviceToken
       : (await DeviceInfo.isEmulator())
@@ -125,8 +89,8 @@ const LoginScreen = () => {
       : undefined;
 
     const params: AuthData = {
-      email_address: email,
-      password,
+      email_address: data.email,
+      password: data.password,
       is_social_login: false,
       device_token: tokenForPayload,
       device_type: Platform.OS,
@@ -150,6 +114,12 @@ const LoginScreen = () => {
 
   const handleGoogleLogin = async () => {
     try {
+      const auth = getSafeAuth();
+      if (!auth) {
+        ToastManager.showError('Firebase not configured');
+        return;
+      }
+
       await GoogleSignin.hasPlayServices();
 
       const existingUser = await GoogleSignin.getCurrentUser();
@@ -158,7 +128,7 @@ const LoginScreen = () => {
         await GoogleSignin.signOut();
       }
 
-      const googleUser = (await GoogleSignin.signIn()) as SignInSuccessResponse;
+      const googleUser = (await GoogleSignin.signIn()) as any;
       if (!googleUser.data.idToken) throw new Error('Google Sign-In failed');
 
       const googleCredential = GoogleAuthProvider.credential(
@@ -166,7 +136,6 @@ const LoginScreen = () => {
       );
 
       try {
-        const auth = getAuth();
         await signInWithCredential(auth, googleCredential);
       } catch (firebaseError) {
         Logger.error('Firebase Auth Error:', firebaseError);
@@ -175,8 +144,10 @@ const LoginScreen = () => {
 
       let token = deviceToken;
       if (!token) {
-        const messaging = getMessaging(getApp());
-        token = await getToken(messaging);
+        const messaging = getSafeMessaging();
+        if (messaging) {
+          token = await getToken(messaging);
+        }
       }
 
       const googleLoginParams = {
@@ -198,7 +169,11 @@ const LoginScreen = () => {
 
   const handleAppleLogin = async () => {
     try {
-      const authInstance = getAuth();
+      const authInstance = getSafeAuth();
+      if (!authInstance) {
+        ToastManager.showError('Firebase not configured');
+        return;
+      }
 
       if (authInstance.currentUser) {
         await signOut(authInstance);
@@ -244,8 +219,10 @@ const LoginScreen = () => {
 
       let token = deviceToken;
       if (!token) {
-        const messaging = getMessaging(getApp());
-        token = await getToken(messaging);
+        const messaging = getSafeMessaging();
+        if (messaging) {
+          token = await getToken(messaging);
+        }
       }
 
       const appleLoginParams = {
@@ -295,35 +272,47 @@ const LoginScreen = () => {
             </MyText>
           </View>
           <View style={styles.inputContainer}>
-            <InputField
-              ref={emailRef}
-              value={email}
-              onChangeText={setEmail}
-              placeholder={strings.emailAddress}
-              errorMsg={emailError}
-              textInputStyle={{ fontFamily: fonts.Regular }}
-              maxLength={40}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              onSubmitEditing={() => passwordRef.current?.focus()}
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <InputField
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  placeholder={strings.emailAddress}
+                  errorMsg={errors.email?.message}
+                  textInputStyle={{ fontFamily: fonts.Regular }}
+                  maxLength={40}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  onSubmitEditing={() => passwordRef.current?.focus()}
+                />
+              )}
             />
             <SpacerView height={20} />
-            <InputField
-              ref={passwordRef}
-              value={password}
-              onChangeText={setPassword}
-              placeholder={strings.password}
-              maxLength={16}
-              secureText={passwordSecure}
-              secureTextOption={true}
-              setSecureText={setPasswordSecure}
-              errorMsg={passwordError}
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <InputField
+                  ref={passwordRef}
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  placeholder={strings.password}
+                  maxLength={16}
+                  secureText={passwordSecure}
+                  secureTextOption={true}
+                  setSecureText={setPasswordSecure}
+                  errorMsg={errors.password?.message}
+                />
+              )}
             />
             <SpacerView height={12} />
             <MyText
               onPress={() => {
                 clickToForgotPassword();
-                navigation.navigateToForgotPassword();
               }}
               style={styles.forgotPasswordText}
             >
@@ -332,7 +321,7 @@ const LoginScreen = () => {
             <SpacerView height={35} />
             <PrimaryButton
               title={strings.loginCapital}
-              onPress={handleUserLogin}
+              onPress={handleSubmit(onSubmit)}
             />
           </View>
 

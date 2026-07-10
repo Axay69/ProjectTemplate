@@ -13,6 +13,7 @@ export const toastConfig: RNToastConfig = {
   error: ({ text1 }: ToastConfigProps) => (
     <CustomToast
       toastBg={colors.errorColor}
+      toastBorderColor={colors.errorColor}
       toastIcon={errorIcon}
       text1={text1}
     />
@@ -20,6 +21,7 @@ export const toastConfig: RNToastConfig = {
   info: ({ text1 }: ToastConfigProps) => (
     <CustomToast
       toastBg={colors.infoColor}
+      toastBorderColor={colors.infoColor}
       toastIcon={infoIcon}
       text1={text1}
     />
@@ -27,6 +29,7 @@ export const toastConfig: RNToastConfig = {
   success: ({ text1 }: ToastConfigProps) => (
     <CustomToast
       toastBg={colors.successColor}
+      toastBorderColor={colors.successColor}
       toastIcon={successIcon}
       text1={text1}
     />
@@ -34,6 +37,7 @@ export const toastConfig: RNToastConfig = {
   warning: ({ text1 }: ToastConfigProps) => (
     <CustomToast
       toastBg={colors.warningColor}
+      toastBorderColor={colors.warningColor}
       toastIcon={warningIcon}
       text1={text1}
     />

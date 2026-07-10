@@ -1,7 +1,7 @@
 import { Dispatch } from 'redux';
 import { Api } from '@core/api';
 import { setApiHeader, setUserInfo, UserInfo, resetUser } from '@store';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storage } from '@core/storage';
 import {
   AuthData,
   EmailPayload,
@@ -11,6 +11,7 @@ import {
 import { AppDispatch } from '@store';
 import Logger from '@core/logger';
 import { TokenStorage } from '@core/storage';
+import { ENDPOINTS } from '@core/api/endpoints';
 
 export function setHeader(accessToken: string, refreshToken?: string) {
   return async (dispatch: Dispatch) => {
@@ -37,7 +38,7 @@ export function setUserInfoData(data: UserInfo) {
 export function loginUser(data: AuthData) {
   return async (dispatch: AppDispatch) => {
     try {
-      const response = await Api.POST('auth/sign-in', data);
+      const response = await Api.POST(ENDPOINTS.AUTH.SIGN_IN, data);
 
       if (response.success) {
         dispatch(setUserInfoData(response.data));
@@ -61,7 +62,7 @@ export function loginUser(data: AuthData) {
 
 export async function refreshAccessToken(refreshToken: string) {
   try {
-    const response = await Api.POST('auth/refresh-token', {
+    const response = await Api.POST(ENDPOINTS.AUTH.REFRESH_TOKEN, {
       refresh_token: refreshToken,
     });
 
@@ -93,7 +94,7 @@ export async function refreshAccessToken(refreshToken: string) {
 
 export async function checkEmail(data: EmailPayload) {
   try {
-    const response = await Api.GET('auth/check-email-address', data);
+    const response = await Api.GET(ENDPOINTS.AUTH.CHECK_EMAIL, data);
 
     if (response.success) {
       return { success: true, data: response.data, message: response.message };
@@ -107,7 +108,7 @@ export async function checkEmail(data: EmailPayload) {
 
 export async function sendVerificationEmail(data: EmailPayload) {
   try {
-    const response = await Api.POST('auth/send-verification-email', data);
+    const response = await Api.POST(ENDPOINTS.AUTH.SEND_VERIFICATION_EMAIL, data);
 
     if (response.success) {
       return { success: true, data: response.data, message: response.message };
@@ -121,7 +122,7 @@ export async function sendVerificationEmail(data: EmailPayload) {
 
 export async function verifyOtp(data: VerifyEmailPayload) {
   try {
-    const response = await Api.POST('auth/verify-otp', data);
+    const response = await Api.POST(ENDPOINTS.AUTH.VERIFY_OTP, data);
 
     if (response.success) {
       return { success: true, data: response.data, message: response.message };
@@ -135,7 +136,7 @@ export async function verifyOtp(data: VerifyEmailPayload) {
 
 export async function verifyEmail(data: VerifyEmailPayload) {
   try {
-    const response = await Api.POST('auth/verify-email', data);
+    const response = await Api.POST(ENDPOINTS.AUTH.VERIFY_EMAIL, data);
 
     if (response.success) {
       return { success: true, data: response.data, message: response.message };
@@ -150,7 +151,7 @@ export async function verifyEmail(data: VerifyEmailPayload) {
 export function registerUser(data: AuthData) {
   return async (dispatch: AppDispatch) => {
     try {
-      const response = await Api.POST('auth/sign-up', data);
+      const response = await Api.POST(ENDPOINTS.AUTH.SIGN_UP, data);
 
       if (response.success) {
         dispatch(setUserInfoData(response.data));
@@ -174,7 +175,7 @@ export function registerUser(data: AuthData) {
 
 export async function forgotPassword(data: EmailPayload) {
   try {
-    const response = await Api.POST('auth/forgot-password', data);
+    const response = await Api.POST(ENDPOINTS.AUTH.FORGOT_PASSWORD, data);
 
     if (response.success) {
       return { success: true, data: response.data, message: response.message };
@@ -187,7 +188,7 @@ export async function forgotPassword(data: EmailPayload) {
 }
 export async function resetPassword(data: passwordPayload) {
   try {
-    const response = await Api.POST('auth/reset-password', data);
+    const response = await Api.POST(ENDPOINTS.AUTH.RESET_PASSWORD, data);
 
     if (response.success) {
       return { success: true, data: response.data, message: response.message };
@@ -228,8 +229,8 @@ export function logoutUser() {
       try {
         // Clear tokens from keychain
         await TokenStorage.clearAllTokens();
-        // Clear AsyncStorage (for other cached data)
-        await AsyncStorage.clear();
+        // Clear storage using our abstracted storage
+        await storage.clearAll();
       } catch (e) {
         Logger.error('Error clearing storage', e);
       }
@@ -239,7 +240,7 @@ export function logoutUser() {
 
 export async function logoutUserAccount() {
   try {
-    const response = await Api.POST('auth/logout', {});
+    const response = await Api.POST(ENDPOINTS.AUTH.LOGOUT, {});
 
     if (response.success) {
       return {

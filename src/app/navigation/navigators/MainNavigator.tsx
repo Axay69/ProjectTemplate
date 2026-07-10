@@ -1,4 +1,4 @@
-import React, { useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import DashboardNavigator from './DashboardNavigator';
 import AuthNavigator from './AuthNavigator';
@@ -22,6 +22,7 @@ import { bootstrap } from '@app/bootstrap';
 const MainNavigator = () => {
   const dispatch = useDispatch<AppDispatch>();
   const RootStack = createNativeStackNavigator<RootStackParamList>();
+  const [isLoading, setIsLoading] = useState(true);
 
   const userInfo = useSelector((state: RootState) => state.auth.userInfo);
   const apiHeader = useSelector((state: RootState) => state.auth.apiHeader);
@@ -45,6 +46,7 @@ const MainNavigator = () => {
       } catch (error) {
         console.error('App initialization error:', error);
       } finally {
+        setIsLoading(false);
         await RNBootSplash.hide({ fade: true });
       }
     };
@@ -58,6 +60,10 @@ const MainNavigator = () => {
       await RNBootSplash.hide({ fade: true });
     }, 5000);
   }, []);
+
+  if (isLoading) {
+    return null; // Or your loading component
+  }
 
   return (
     <ErrorBoundary>

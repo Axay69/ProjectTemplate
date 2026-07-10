@@ -18,9 +18,14 @@ export interface UserInfo {
   first_name: string;
   last_name: string;
   user_name?: string;
+  barsiq_ai_enabled?: boolean;
+  barsiq_avatar?: any;
+  user_type?: string;
+  flare_balance?: number;
 }
 
 export interface UserState {
   userInfo: UserInfo | null;
   apiHeader: string | null;
+  unreadNotificationCount?: number;
 }

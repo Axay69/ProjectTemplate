@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 
 import { styles } from './styles';
 
-import { getAuth } from '@react-native-firebase/auth';
+import { getSafeAuth } from '@core/firebase';
 import { useDashboardNavigation } from '@app/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@store';
@@ -27,7 +27,7 @@ const ProfileScreen = () => {
   const navigation = useDashboardNavigation();
   const [showDeleteConfirmation, setDeleteBottomSheetShow] = useState(false);
 
-  const auth = getAuth();
+  const auth = getSafeAuth();
   const dispatch = useDispatch<AppDispatch>();
   const userInfo = useSelector((state: RootState) => state.auth.userInfo);
 
@@ -43,10 +43,10 @@ const ProfileScreen = () => {
           switch (userInfo?.social_media_type) {
             case 'google':
               await GoogleSignin.signOut();
-              await auth.signOut();
+              if (auth) await auth.signOut();
               break;
             case 'apple':
-              await auth.signOut();
+              if (auth) await auth.signOut();
               break;
           }
         } catch (socialError) {

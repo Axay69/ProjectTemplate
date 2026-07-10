@@ -28,4 +28,10 @@ export const colors = {
   pastelRed: '#FF6262',
   green: 'green',
   lightGray: '#949DAD',
+  inputFocusShadow: 'rgba(0,0,0,0.2)',
+  inputIconColor: '#949DAD',
+  inputPlaceholderColor: '#949DAD',
+  inputBorderColor: '#E5E7EB',
+  inputBackground: '#F8F9FA',
+  borderTintColor: '#007AFF',
 };

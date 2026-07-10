@@ -1,4 +1,5 @@
 import { Api } from '@core/api';
+import { ENDPOINTS } from '@core/api/endpoints';
 import {
   downloadUrlRequest,
   editProfileProps,
@@ -8,7 +9,7 @@ import {
 
 export async function getWebUri(data: GetWebUriRequest) {
   try {
-    const res = await Api.GET('app-content/get', data);
+    const res = await Api.GET(ENDPOINTS.APP_CONTENT.GET, data);
     if (res.success) {
       return { success: res.success, data: res.data, message: res.message };
     } else {
@@ -21,7 +22,7 @@ export async function getWebUri(data: GetWebUriRequest) {
 
 export async function deleteUserAccount() {
   try {
-    const response = await Api.DELETE('auth/delete-account', {});
+    const response = await Api.DELETE(ENDPOINTS.AUTH.DELETE_ACCOUNT, {});
 
     if (response.success) {
       return {
@@ -38,7 +39,7 @@ export async function deleteUserAccount() {
 }
 export async function downloadGenerateUrl(data: downloadUrlRequest) {
   try {
-    const response = await Api.GET('s3-bucket/generate-download-url', data);
+    const response = await Api.GET(ENDPOINTS.S3.GENERATE_DOWNLOAD_URL, data);
 
     if (response.success) {
       return {
@@ -56,7 +57,7 @@ export async function downloadGenerateUrl(data: downloadUrlRequest) {
 
 export async function generateImageUrl(data: imageData) {
   try {
-    const response = await Api.POST('s3-bucket/generate-upload-url', data);
+    const response = await Api.POST(ENDPOINTS.S3.GENERATE_UPLOAD_URL, data);
 
     if (response.success) {
       return {
@@ -74,7 +75,7 @@ export async function generateImageUrl(data: imageData) {
 
 export async function deleteGenerateUrl(data: downloadUrlRequest) {
   try {
-    const response = await Api.DELETE('s3-bucket/delete-file', data);
+    const response = await Api.DELETE(ENDPOINTS.S3.DELETE_FILE, data);
     if (response.success) {
       return {
         success: response.success,
@@ -91,7 +92,7 @@ export async function deleteGenerateUrl(data: downloadUrlRequest) {
 
 export async function editProfile(data: editProfileProps) {
   try {
-    const response = await Api.PATCH('auth/edit-profile', data);
+    const response = await Api.PATCH(ENDPOINTS.AUTH.EDIT_PROFILE, data);
 
     if (response.success) {
       return {

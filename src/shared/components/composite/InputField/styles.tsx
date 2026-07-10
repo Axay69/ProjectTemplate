@@ -1,31 +1,42 @@
 import { StyleSheet } from 'react-native';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
-import { colors, fonts, textVariants } from '@theme';
+import { fonts, colors, textVariants } from '@theme';
 
 export const styles = StyleSheet.create({
   containerStyle: {
     flexDirection: 'row',
-    height: verticalScale(50),
     alignItems: 'center',
-    borderRadius: scale(5),
-    backgroundColor: colors.black20,
-    borderWidth: 1,
-    borderColor: 'transparent',
+    borderRadius: verticalScale(30),
+    borderWidth: 1.5,
+    borderColor: colors.inputBorderColor,
+    backgroundColor: colors.inputBackground,
+    paddingHorizontal: scale(8),
+    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    elevation: 5,
+    overflow: 'hidden',
+  },
+  containerFocused: {
+    borderColor: colors.borderTintColor,
+  },
+  containerError: {
+    borderColor: colors.errorColor,
   },
   textInput: {
-    ...textVariants.font_15,
+    ...textVariants.font_13,
+    lineHeight: undefined,
     flex: 1,
+    height: verticalScale(45),
     paddingVertical: 0,
-    backgroundColor: 'transparent',
-    height: verticalScale(60),
     fontFamily: fonts.Regular,
-    marginHorizontal: scale(20),
-    color: colors.BLACK,
+    marginLeft: scale(8),
+    marginRight: scale(10),
+    color: colors.text,
   },
   leftIcon: {
     width: scale(24),
     height: verticalScale(24),
-    marginRight: scale(7),
     marginLeft: scale(10),
   },
   secureIcon: {
@@ -35,7 +46,7 @@ export const styles = StyleSheet.create({
   },
   iconButton: {
     marginLeft: scale(5),
-    marginRight: 10,
+    marginRight: scale(4),
   },
   applyText: {
     ...textVariants.font_15,
@@ -43,23 +54,50 @@ export const styles = StyleSheet.create({
     paddingHorizontal: scale(10),
   },
   errorStyle: {
-    ...textVariants.font_12,
-
+    ...textVariants.font_13,
     marginTop: verticalScale(2),
     fontFamily: fonts.Medium,
     color: colors.errorColor,
   },
-  mainContainer: { width: '100%' },
-  rightText: {
+  mainContainer: {
+    marginBottom: 0,
+    marginTop: 0,
+  },
+  label: {
+    ...textVariants.font_13,
+    fontFamily: fonts.Semibold,
+    color: 'rgba(51, 51, 51, 1)',
+  },
+  labelContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: verticalScale(5),
+  },
+  rightLabel: {
     ...textVariants.font_10,
+    fontFamily: fonts.Regular,
+    color: colors.textSecondary,
+  },
+  rightText: {
+    ...textVariants.font_13,
     color: colors.whiteOverlay30,
     fontFamily: fonts.Regular,
     marginRight: 15,
   },
+  rightIconContainer: {
+    paddingHorizontal: scale(10),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  rightIcon: {
+    width: scale(20),
+    height: scale(20),
+  },
   userNameDescStyle: {
     ...textVariants.font_12,
     marginTop: verticalScale(2),
-    fontFamily: fonts.Medium,
+    fontFamily: fonts.Regular,
     color: colors.black50,
   },
 });

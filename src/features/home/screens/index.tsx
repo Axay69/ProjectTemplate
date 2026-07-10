@@ -14,7 +14,7 @@ import Logger from '@core/logger';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@store';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { getAuth } from '@react-native-firebase/auth';
+import { getSafeAuth } from '@core/firebase';
 import {
   logoutUser,
   logoutUserAccount,
@@ -28,7 +28,7 @@ const HomeScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
   const userInfo = useSelector((state: RootState) => state.auth.userInfo);
 
-  const auth = getAuth();
+  const auth = getSafeAuth();
 
   const handleLogoutAccount = async () => {
     setShowLogoutModel(false);
@@ -41,9 +41,9 @@ const HomeScreen = () => {
         if (userInfo?.is_social_login) {
           if (userInfo.social_media_type === 'google') {
             await GoogleSignin.signOut();
-            await auth.signOut();
+            if (auth) await auth.signOut();
           } else if (userInfo.social_media_type === 'apple') {
-            await auth.signOut();
+            if (auth) await auth.signOut();
           }
         }
         await dispatch(logoutUser());

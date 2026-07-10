@@ -1,12 +1,11 @@
 import { PermissionsAndroid, Platform } from 'react-native';
 import {
-  getMessaging,
   getToken,
   requestPermission,
   AuthorizationStatus,
 } from '@react-native-firebase/messaging';
-import { getApp } from '@react-native-firebase/app';
 import Logger from '../logger';
+import { getSafeMessaging } from '../firebase';
 
 export const requestUserPermission = async (): Promise<boolean> => {
   try {
@@ -23,7 +22,11 @@ export const requestUserPermission = async (): Promise<boolean> => {
       Logger.debug('Android Notification Permission:', result);
       return granted;
     } else {
-      const messaging = getMessaging(getApp());
+      const messaging = getSafeMessaging();
+      if (!messaging) {
+        Logger.warn('Firebase not initialized, skipping iOS notification permission');
+        return false;
+      }
       const authStatus = await requestPermission(messaging, {
         alert: true,
         badge: true,
@@ -41,9 +44,13 @@ export const requestUserPermission = async (): Promise<boolean> => {
   }
 };
 
-export const getFCMToken = async (): Promise<string | null> => {
+export const getFCMToken = async (): Promise<string | undefined> => {
   try {
-    const messaging = getMessaging(getApp());
+    const messaging = getSafeMessaging();
+    if (!messaging) {
+      Logger.warn('Firebase not initialized, skipping FCM token fetch');
+      return undefined;
+    }
     const token = await getToken(messaging);
     Logger.debug('FCM Token:', token);
     return token;
@@ -57,7 +64,8 @@ export const getFCMToken = async (): Promise<string | null> => {
       );
       await new Promise<void>(resolve => setTimeout(resolve, 2000));
       try {
-        const messaging = getMessaging(getApp());
+        const messaging = getSafeMessaging();
+        if (!messaging) return undefined;
         const token = await getToken(messaging);
         Logger.debug('FCM Token (retry):', token);
         return token;
@@ -66,13 +74,13 @@ export const getFCMToken = async (): Promise<string | null> => {
       }
     }
 
-    return null;
+    return undefined;
   }
 };
 
-export const initFCM = async (): Promise<string | null> => {
+export const initFCM = async (): Promise<string | undefined> => {
   const enabled = await requestUserPermission();
   if (enabled) return await getFCMToken();
   Logger.warn('Notification permissions not granted');
-  return null;
+  return undefined;
 };

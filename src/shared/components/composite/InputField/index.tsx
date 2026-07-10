@@ -1,13 +1,23 @@
 import React, { forwardRef, useState } from 'react';
-import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { colors } from '@theme';
+import {
+  Image,
+  NativeSyntheticEvent,
+  TargetedEvent,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { colors, fonts } from '@theme';
 import { styles } from './styles';
 import { eyeIcon, eyeSlashIcon } from '@assets/icons';
 import { InputFieldProps } from './types';
+import { scale } from 'react-native-size-matters';
 
 const InputField = forwardRef<TextInput, InputFieldProps>(
   (
     {
+      label,
       value,
       onChangeText,
       placeholder,
@@ -19,76 +29,179 @@ const InputField = forwardRef<TextInput, InputFieldProps>(
       parentStyle,
       errorMsg,
       leftIcon,
+      leftIconTintColor,
       leftIconStyle,
       onSubmitEditing,
       rightText,
       rightTextStyle,
+      onFocus: propsOnFocus,
+      onBlur: propsOnBlur,
+      InputComponent = TextInput,
+      rightLabel,
+      rightIcon,
+      rightIconStyle,
+      onRightIconPress,
+      userNameDesc,
+      onPress,
+      leftComponent,
+      rightComponent,
+      topComponent,
+      isMentionHighlighting = false,
+      children,
+      noDynamicPlaceholderFonts = false,
       ...other
     },
     ref,
   ) => {
-    const [borderColor, setBorderColor] = useState('transparent');
+    const [isFocused, setIsFocused] = useState(false);
 
-    const onFocus = () => {
-      setBorderColor(colors.BLACK);
+    const onFocus = (e: NativeSyntheticEvent<TargetedEvent>) => {
+      setIsFocused(true);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      propsOnFocus?.(e as any);
     };
-    const onBlur = () => {
-      setBorderColor('transparent');
+
+    const onBlur = (e: NativeSyntheticEvent<TargetedEvent>) => {
+      setIsFocused(false);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      propsOnBlur?.(e as any);
     };
+
+    const handleTextChange = (text: string) => {
+      if (text.startsWith(' ')) {
+        text = text.trimStart();
+      }
+      onChangeText?.(text);
+    };
+
     return (
       <View style={[styles.mainContainer, parentStyle]}>
-        <View
+        {(label || rightLabel) && (
+          <View style={styles.labelContainer}>
+            {label && <Text style={styles.label}>{label}</Text>}
+            {rightLabel && <Text style={styles.rightLabel}>{rightLabel}</Text>}
+          </View>
+        )}
+        <TouchableOpacity
+          activeOpacity={onPress ? 1 : 1}
+          onPress={onPress}
+          disabled={!onPress}
           style={[
             styles.containerStyle,
-            {
-              borderColor: errorMsg ? colors.errorColor : borderColor,
-            },
             containerStyle,
+            isFocused && styles.containerFocused,
+            errorMsg ? styles.containerError : undefined,
+            {
+              shadowColor: isFocused ? colors.inputFocusShadow : 'transparent',
+            },
+            topComponent
+              ? {
+                  flexDirection: 'column',
+                  alignItems: 'stretch',
+                  paddingHorizontal: 0,
+                  paddingVertical: scale(6),
+                }
+              : undefined,
           ]}
         >
-          {leftIcon && (
-            <Image
-              source={leftIcon}
-              style={[styles.leftIcon, leftIconStyle]}
-              resizeMode="contain"
-            />
-          )}
-
-          <TextInput
-            ref={ref}
-            style={[styles.textInput, textInputStyle]}
-            value={value}
-            onChangeText={text => {
-              if (text.startsWith(' ')) {
-                text = text.trimStart();
-              }
-              onChangeText?.(text);
-            }}
-            placeholder={placeholder}
-            placeholderTextColor={colors.black40}
-            secureTextEntry={secureText}
-            cursorColor={colors.black40}
-            onSubmitEditing={onSubmitEditing}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            {...other}
-          />
-          {rightText && (
-            <Text style={[styles.rightText, rightTextStyle]}>{rightText}</Text>
-          )}
-          {secureTextOption && setSecureText && (
-            <TouchableOpacity
-              style={styles.iconButton}
-              onPress={() => setSecureText(!secureText)}
-            >
+          {topComponent}
+          <View
+            style={
+              topComponent
+                ? {
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    width: '100%',
+                    paddingHorizontal: scale(8),
+                  }
+                : {
+                    flexDirection: 'row',
+                    alignItems: other.multiline ? 'flex-start' : 'center',
+                    flex: 1,
+                  }
+            }
+          >
+            {leftComponent}
+            {leftIcon && (
               <Image
-                source={secureText ? eyeSlashIcon : eyeIcon}
-                style={styles.secureIcon}
+                source={leftIcon}
+                style={[styles.leftIcon, leftIconStyle]}
                 resizeMode="contain"
+                tintColor={
+                  leftIconTintColor
+                    ? leftIconTintColor === 'null'
+                      ? undefined
+                      : leftIconTintColor
+                    : colors.inputIconColor
+                }
               />
-            </TouchableOpacity>
-          )}
-        </View>
+            )}
+
+            <InputComponent
+              {...((InputComponent as React.ComponentType) === TextInput
+                ? { ref }
+                : {})}
+              style={[
+                styles.textInput,
+                textInputStyle,
+                noDynamicPlaceholderFonts
+                  ? { fontFamily: fonts.Medium }
+                  : (value?.length ?? 0) > 0
+                  ? { fontFamily: fonts.Medium }
+                  : { fontFamily: fonts.Regular },
+              ]}
+              value={isMentionHighlighting ? undefined : value}
+              onChangeText={handleTextChange}
+              placeholder={placeholder}
+              placeholderTextColor={colors.inputPlaceholderColor}
+              secureTextEntry={secureText}
+              autoCorrect={false}
+              autoCapitalize="none"
+              textContentType="oneTimeCode"
+              cursorColor={colors.inputPlaceholderColor}
+              onSubmitEditing={onSubmitEditing}
+              onFocus={onFocus}
+              onBlur={onBlur}
+              {...other}
+            >
+              {isMentionHighlighting ? children : undefined}
+            </InputComponent>
+            {rightComponent}
+            {rightText && (
+              <Text style={[styles.rightText, rightTextStyle]}>
+                {rightText}
+              </Text>
+            )}
+            {rightIcon && (
+              <TouchableOpacity
+                onPress={onRightIconPress}
+                disabled={!onRightIconPress}
+                style={styles.rightIconContainer}
+              >
+                <Image
+                  source={rightIcon}
+                  style={[styles.rightIcon, rightIconStyle]}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+            )}
+            {secureTextOption && setSecureText && (
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={() => setSecureText(!secureText)}
+              >
+                <Image
+                  source={secureText ? eyeSlashIcon : eyeIcon}
+                  style={styles.secureIcon}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+            )}
+          </View>
+        </TouchableOpacity>
+        {userNameDesc && (
+          <Text style={styles.userNameDescStyle}>{userNameDesc}</Text>
+        )}
         {errorMsg && <Text style={[styles.errorStyle]}>{errorMsg}</Text>}
       </View>
     );

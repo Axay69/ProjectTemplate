@@ -15,4 +15,8 @@ export const mmkvStorage = {
     storage.remove(key);
     return Promise.resolve();
   },
+  clearAll: () => {
+    storage.clearAll();
+    return Promise.resolve();
+  },
 };

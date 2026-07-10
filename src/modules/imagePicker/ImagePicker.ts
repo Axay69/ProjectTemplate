@@ -1,8 +1,8 @@
 import { Alert, Linking } from 'react-native';
 import ImagePicker, { ImageOrVideo } from 'react-native-image-crop-picker';
 import Logger from '@core/logger';
+import { strings } from '@shared/constants/index';
 
-// 1MB in bytes
 const MAX_SIZE = 1024 * 1024;
 
 // Define a proper type for ImagePicker errors
@@ -11,15 +11,39 @@ type ImagePickerError = {
   message: string;
 };
 
-export const pickAndCompressImage = async (): Promise<ImageOrVideo | null> => {
+export interface ImagePickerOptions {
+  width?: number;
+  height?: number;
+  freeStyleCropEnabled?: boolean;
+  cropping?: boolean;
+  cropperCircleOverlay?: boolean;
+}
+
+export const pickAndCompressImage = async (
+  options?: ImagePickerOptions,
+): Promise<ImageOrVideo | null> => {
+  const width = options?.width || 1000;
+  const height = options?.height || 1000;
+  const shouldCrop = options?.cropping !== false;
+
   try {
-    // STEP 1: Pick image
+    // STEP 1: Pick image (no cropping by default during pick, NO base64 to prevent OOM crash)
     let image = await ImagePicker.openPicker({
-      width: 1000,
-      height: 1000,
-      cropping: true,
       mediaType: 'photo',
+      forceJpg: true,
     });
+
+    // STEP 1.5: Crop the selected image
+    if (shouldCrop) {
+      image = await ImagePicker.openCropper({
+        path: image.path,
+        width,
+        height,
+        freeStyleCropEnabled: options?.freeStyleCropEnabled,
+        cropperCircleOverlay: options?.cropperCircleOverlay,
+        mediaType: 'photo',
+      });
+    }
 
     let quality = 0.9;
 
@@ -27,8 +51,10 @@ export const pickAndCompressImage = async (): Promise<ImageOrVideo | null> => {
     while (image.size > MAX_SIZE && quality > 0.1) {
       image = await ImagePicker.openCropper({
         path: image.path,
-        width: 1000,
-        height: 1000,
+        width,
+        height,
+        freeStyleCropEnabled: options?.freeStyleCropEnabled,
+        cropperCircleOverlay: options?.cropperCircleOverlay,
         compressImageQuality: quality,
         mediaType: 'photo',
       });
@@ -75,7 +101,7 @@ const showPermissionDeniedAlert = () => {
     'Permission Required',
     'This app needs access to your photos to select an image. Please enable it in your device settings.',
     [
-      { text: 'Cancel', style: 'cancel' },
+      { text: strings.cancel, style: 'cancel' },
       { text: 'Open Settings', onPress: () => Linking.openSettings() },
     ],
   );

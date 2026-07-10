@@ -1,5 +1,5 @@
 export interface FastImageProps {
-  profilePicture?: string;
+  profilePicture?: string | number | object;
   style?: object | object[];
   styleActivityIndicator?: object | object[];
 }

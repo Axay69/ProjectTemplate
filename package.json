@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@gorhom/bottom-sheet": "^5.2.8",
+    "@hookform/resolvers": "^5.4.0",
     "@invertase/react-native-apple-authentication": "^2.4.1",
     "@react-native-async-storage/async-storage": "^3.1.1",
     "@react-native-community/netinfo": "^11.4.1",
@@ -30,6 +31,7 @@
     "@reduxjs/toolkit": "^2.9.0",
     "axios": "^1.12.2",
     "react": "19.2.3",
+    "react-hook-form": "^7.81.0",
     "react-native": "0.84.1",
     "react-native-bootsplash": "^6.3.11",
     "react-native-device-info": "^14.1.1",
@@ -55,10 +57,12 @@
     "redux-persist": "^6.0.0",
     "redux-thunk": "^3.1.0",
     "semver": "^7.7.2",
-    "sp-react-native-in-app-updates": "^1.5.0"
+    "sp-react-native-in-app-updates": "^1.5.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@babel/plugin-transform-export-namespace-from": "^8.0.1",
     "@babel/preset-env": "^7.25.3",
     "@babel/runtime": "^7.25.0",
     "@react-native-community/cli": "20.1.0",

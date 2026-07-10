@@ -10,28 +10,39 @@ import { styles } from './styles';
 
 interface CustomToastProps {
   toastBg: string;
+  toastBorderColor: string;
   toastIcon: ImageSourcePropType;
   text1: string | undefined;
   onPress?: () => void;
+  onUndo?: () => void;
+  undoText?: string;
 }
 
 const CustomToast: React.FC<CustomToastProps> = ({
   toastBg,
+  toastBorderColor,
   toastIcon,
   text1,
   onPress,
+  onUndo,
+  undoText = 'Undo',
 }) => {
   return (
-    <TouchableOpacity onPress={onPress} style={styles.mainContainer}>
+    <TouchableOpacity
+      activeOpacity={1}
+      onPress={onPress}
+      style={styles.mainContainer}
+    >
       <View
         style={[
           styles.container,
           {
-            borderColor: toastBg,
+            backgroundColor: toastBg,
+            borderLeftColor: toastBorderColor,
           },
         ]}
       >
-        <View>
+        <View style={styles.iconContainer}>
           <Image
             source={toastIcon}
             resizeMode="contain"
@@ -39,9 +50,23 @@ const CustomToast: React.FC<CustomToastProps> = ({
           />
         </View>
         <View style={styles.textContainer}>
-          <Text style={styles.textStyle}>{text1}</Text>
-          <View style={{ height: 2 }} />
+          <Text
+            style={styles.textStyle}
+            numberOfLines={3}
+            allowFontScaling={false}
+          >
+            {text1}
+          </Text>
         </View>
+        {onUndo && (
+          <TouchableOpacity
+            style={styles.undoContainer}
+            onPress={onUndo}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.undoText}>{undoText}</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </TouchableOpacity>
   );

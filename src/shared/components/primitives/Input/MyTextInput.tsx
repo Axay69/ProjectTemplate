@@ -5,7 +5,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { colors, spacing, radius } from '@theme/index';
+import { colors, radius, LAYOUT } from '@theme/index';
 
 interface MyTextInputProps extends TextInputProps {
   containerStyle?: any;
@@ -33,11 +33,12 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   input: {
-    height: 48,
+    minHeight: LAYOUT.INPUT.MIN_HEIGHT,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: LAYOUT.INPUT.PADDING_HORIZONTAL,
+    paddingVertical: LAYOUT.INPUT.PADDING_VERTICAL,
     color: colors.text,
     fontSize: 16,
   },

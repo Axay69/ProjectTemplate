@@ -31,8 +31,13 @@ const userSlice = createSlice({
       state.userInfo = null;
       state.apiHeader = null;
     },
+    setUnreadNotificationCount: (state, action: PayloadAction<number>) => {
+      if (state.userInfo) {
+        state.userInfo.noti_badge = action.payload;
+      }
+    },
   },
 });
 
-export const { setUserInfo, setApiHeader, resetUser } = userSlice.actions;
+export const { setUserInfo, setApiHeader, resetUser, setUnreadNotificationCount } = userSlice.actions;
 export const authReducer = userSlice.reducer;
