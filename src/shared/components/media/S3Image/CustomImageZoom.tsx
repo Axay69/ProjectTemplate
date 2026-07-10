@@ -33,7 +33,7 @@ const CustomImageZoom = forwardRef<CustomImageZoomRef, CustomImageZoomProps>(
         />
       </View>
     );
-  }
+  },
 );
 
 export default CustomImageZoom;

@@ -84,10 +84,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           </TouchableOpacity>
 
           <View style={styles.confirmButtonOuter}>
-            <TouchableOpacity
-              style={styles.confirmButton}
-              onPress={onConfirm}
-            >
+            <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
               <Text style={styles.confirmButtonText}>{confirmText}</Text>
             </TouchableOpacity>
           </View>

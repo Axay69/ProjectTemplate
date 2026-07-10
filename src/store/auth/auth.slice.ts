@@ -39,5 +39,10 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUserInfo, setApiHeader, resetUser, setUnreadNotificationCount } = userSlice.actions;
+export const {
+  setUserInfo,
+  setApiHeader,
+  resetUser,
+  setUnreadNotificationCount,
+} = userSlice.actions;
 export const authReducer = userSlice.reducer;

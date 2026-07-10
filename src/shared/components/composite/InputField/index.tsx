@@ -74,6 +74,12 @@ const InputField = forwardRef<TextInput, InputFieldProps>(
       onChangeText?.(text);
     };
 
+    const toggleSecureText = React.useCallback(() => {
+      if (setSecureText) {
+        setSecureText(!secureText);
+      }
+    }, [setSecureText, secureText]);
+
     return (
       <View style={[styles.mainContainer, parentStyle]}>
         {(label || rightLabel) && (
@@ -188,7 +194,7 @@ const InputField = forwardRef<TextInput, InputFieldProps>(
             {secureTextOption && setSecureText && (
               <TouchableOpacity
                 style={styles.iconButton}
-                onPress={() => setSecureText(!secureText)}
+                onPress={toggleSecureText}
               >
                 <Image
                   source={secureText ? eyeSlashIcon : eyeIcon}

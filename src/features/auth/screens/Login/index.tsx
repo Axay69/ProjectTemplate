@@ -254,6 +254,10 @@ const LoginScreen = () => {
     return lettersOnly.charAt(0).toUpperCase() + lettersOnly.slice(1);
   };
 
+  const handleNavigateToRegister = React.useCallback(() => {
+    navigation.navigateToRegister();
+  }, [navigation]);
+
   return (
     <>
       <ScreenContainer>
@@ -311,9 +315,7 @@ const LoginScreen = () => {
             />
             <SpacerView height={12} />
             <MyText
-              onPress={() => {
-                clickToForgotPassword();
-              }}
+              onPress={clickToForgotPassword}
               style={styles.forgotPasswordText}
             >
               {strings.forgotPassword}
@@ -359,9 +361,7 @@ const LoginScreen = () => {
             {strings.noAccount}
             {''}
             <MyText
-              onPress={() => {
-                navigation.navigateToRegister();
-              }}
+              onPress={handleNavigateToRegister}
               style={styles.signUpText}
             >
               {strings.signUp}

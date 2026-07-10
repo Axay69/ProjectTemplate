@@ -5,7 +5,7 @@ export * from './permissions';
 export * from './navigation';
 
 const NotificationService = {
-  clearBarsiqNotifications: () => {}
+  clearBarsiqNotifications: () => {},
 };
 
 export default NotificationService;

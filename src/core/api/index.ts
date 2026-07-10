@@ -9,6 +9,9 @@ export { urls } from './endpoints';
 export * from './types';
 
 // Mock functions to satisfy compiler
-export const getUnreadNotificationCount = async () => ({ success: true, data: { unread_count: 0 } });
+export const getUnreadNotificationCount = async () => ({
+  success: true,
+  data: { unread_count: 0 },
+});
 export const getBarsiqUnreadCount = async () => ({ success: true, data: 0 });
 export const markBarsiqAsRead = async () => ({ success: true });

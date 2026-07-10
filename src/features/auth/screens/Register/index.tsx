@@ -31,7 +31,10 @@ import Logger from '@core/logger';
 import { checkEmail, sendVerificationEmail } from '@features/auth/services';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { RegisterSchema, RegisterFormData } from '@core/validators/auth.validators';
+import {
+  RegisterSchema,
+  RegisterFormData,
+} from '@core/validators/auth.validators';
 
 export interface RegisterParams {
   first_name: string;
@@ -76,7 +79,8 @@ const RegisterScreen = () => {
   const confirmPasswordRef = useRef<TextInput | null>(null);
 
   const [passwordSecure, setPasswordSecure] = React.useState(true);
-  const [confirmPasswordSecure, setConfirmPasswordSecure] = React.useState(true);
+  const [confirmPasswordSecure, setConfirmPasswordSecure] =
+    React.useState(true);
   const [selectedCondition, setSelectedCondition] = React.useState(false);
   const [deviceToken, setDeviceToken] = React.useState<string | undefined>('');
 
@@ -167,6 +171,28 @@ const RegisterScreen = () => {
     setPasswordSecure(true);
     setSelectedCondition(false);
   };
+
+  const handleToggleCondition = React.useCallback(() => {
+    setSelectedCondition(!selectedCondition);
+  }, [selectedCondition]);
+
+  const handlePrivacyPolicy = React.useCallback(() => {
+    navigation.navigateToWebViewScreen({
+      title: strings.privacy_policy,
+      uriType: strings.privacy_policy_type,
+    });
+  }, [navigation]);
+
+  const handleTermsCondition = React.useCallback(() => {
+    navigation.navigateToWebViewScreen({
+      title: strings.terms_conditions,
+      uriType: strings.terms_and_condition_type,
+    });
+  }, [navigation]);
+
+  const handleGoBack = React.useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
 
   return (
     <ScreenContainer>
@@ -298,9 +324,7 @@ const RegisterScreen = () => {
         <View style={styles.termsAndConditionMainView}>
           <TouchableOpacity
             style={styles.unSelectedView}
-            onPress={() => {
-              setSelectedCondition(!selectedCondition);
-            }}
+            onPress={handleToggleCondition}
           >
             <Image
               source={
@@ -313,39 +337,25 @@ const RegisterScreen = () => {
           <View style={styles.termsAndConditionView}>
             <MyText style={styles.normalText}>
               {strings.iAgree}
-              <MyText
-                onPress={() => {
-                  navigation.navigateToWebViewScreen({
-                    title: strings.privacy_policy,
-                    uriType: strings.privacy_policy_type,
-                  });
-                }}
-                style={styles.linkText}
-              >
+              <MyText onPress={handlePrivacyPolicy} style={styles.linkText}>
                 {strings.privacy_policy}
               </MyText>
               {''} {strings.and}
-              <MyText
-                onPress={() => {
-                  navigation.navigateToWebViewScreen({
-                    title: strings.terms_conditions,
-                    uriType: strings.terms_and_condition_type,
-                  });
-                }}
-                style={styles.linkText}
-              >
+              <MyText onPress={handleTermsCondition} style={styles.linkText}>
                 {strings.terms_conditions}
               </MyText>
             </MyText>
           </View>
         </View>
         <SpacerView height={35} />
-        <PrimaryButton title={strings.signUpCapital} onPress={handleSubmit(handleSignup)} />
+        <PrimaryButton
+          title={strings.signUpCapital}
+          onPress={handleSubmit(handleSignup)}
+        />
         <SpacerView height={50} />
         <MyText style={styles.alreadyAccountText}>
           {strings.alreadyHaveAccount}
-          {''}
-          <MyText onPress={() => navigation.goBack()} style={styles.signUpText}>
+          <MyText onPress={handleGoBack} style={styles.signUpText}>
             {strings.login}
           </MyText>
         </MyText>

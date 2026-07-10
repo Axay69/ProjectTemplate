@@ -1,6 +1,7 @@
 import { createMMKV } from 'react-native-mmkv';
 
 const storage = createMMKV();
+export const s3ImageCacheStorage = createMMKV({ id: 's3-image-cache' });
 
 export const mmkvStorage = {
   setItem: (key: string, value: string) => {

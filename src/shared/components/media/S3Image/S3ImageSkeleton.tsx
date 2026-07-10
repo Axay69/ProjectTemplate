@@ -22,7 +22,7 @@ export const S3ImageSkeleton = React.memo(({ style }: S3ImageSkeletonProps) => {
           duration: 800,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     ).start();
   }, [opacity]);
 

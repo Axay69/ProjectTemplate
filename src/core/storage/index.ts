@@ -1,4 +1,4 @@
-export { mmkvStorage } from './storage';
+export { mmkvStorage, s3ImageCacheStorage } from './storage';
 export { default as TokenStorage } from './token';
 export { storage as mmkv } from './mmkv';
 export {

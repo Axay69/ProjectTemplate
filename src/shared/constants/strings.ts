@@ -98,8 +98,10 @@ export const strings = {
   logoutDesc: 'You can log back in anytime with your credentials.',
   updateRequired: 'Update Required',
   updateAvailable: 'Update Available',
-  updateRequiredDesc: 'A new version of the app is required to continue. Please update now.',
-  updateAvailableDesc: 'A new version of the app is available. Would you like to update now?',
+  updateRequiredDesc:
+    'A new version of the app is required to continue. Please update now.',
+  updateAvailableDesc:
+    'A new version of the app is available. Would you like to update now?',
   later: 'Later',
   updateNow: 'Update Now',
   update: 'Update',

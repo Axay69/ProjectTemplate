@@ -57,6 +57,28 @@ const HomeScreen = () => {
     // dispatch(rootLoader(false));
   };
 
+  const handleNavigateToProfile = React.useCallback(() => {
+    navigation.navigateToProfile();
+  }, [navigation]);
+
+  const handleShowLogout = React.useCallback(() => {
+    setShowLogoutModel(true);
+  }, []);
+
+  const handleTerms = React.useCallback(() => {
+    authNavigation.navigateToWebViewScreen({
+      title: strings.terms_conditions,
+      uriType: strings.terms_and_condition_type,
+    });
+  }, [authNavigation]);
+
+  const handlePrivacyPolicy = React.useCallback(() => {
+    authNavigation.navigateToWebViewScreen({
+      title: strings.privacy_policy,
+      uriType: strings.privacy_policy_type,
+    });
+  }, [authNavigation]);
+
   return (
     <>
       <ScreenContainer>
@@ -64,33 +86,20 @@ const HomeScreen = () => {
           <SpacerView height={50} />
           <PrimaryButton
             title={strings.profile}
-            onPress={() => navigation.navigateToProfile()}
+            onPress={handleNavigateToProfile}
           />
           <SpacerView height={10} />
-          <PrimaryButton
-            title={strings.logOut}
-            onPress={() => setShowLogoutModel(true)}
-          />
+          <PrimaryButton title={strings.logOut} onPress={handleShowLogout} />
 
           <SpacerView height={10} />
           <PrimaryButton
             title={strings.terms_conditions}
-            onPress={() => {
-              authNavigation.navigateToWebViewScreen({
-                title: strings.terms_conditions,
-                uriType: strings.terms_and_condition_type,
-              });
-            }}
+            onPress={handleTerms}
           />
           <SpacerView height={10} />
           <PrimaryButton
             title={strings.privacy_policy}
-            onPress={() => {
-              authNavigation.navigateToWebViewScreen({
-                title: strings.privacy_policy,
-                uriType: strings.privacy_policy_type,
-              });
-            }}
+            onPress={handlePrivacyPolicy}
           />
         </View>
       </ScreenContainer>

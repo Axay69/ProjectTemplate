@@ -14,7 +14,11 @@ import {
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { scale, verticalScale } from 'react-native-size-matters';
-import { useAppDispatch, useAppSelector, setUnreadNotificationCount } from '@store';
+import {
+  useAppDispatch,
+  useAppSelector,
+  setUnreadNotificationCount,
+} from '@store';
 import {
   getUnreadNotificationCount,
   getBarsiqUnreadCount,
@@ -76,9 +80,8 @@ const Header: React.FC<HeaderProps> = ({
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const userInfo = useAppSelector(state => state.auth.userInfo);
-  const unreadNotificationCount = useAppSelector(
-    state => state.auth.unreadNotificationCount,
-  ) ?? 0;
+  const unreadNotificationCount =
+    useAppSelector(state => state.auth.unreadNotificationCount) ?? 0;
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showBarsiqModal, setShowBarsiqModal] = useState(false);
   const [barsiqUnreadCount, setBarsiqUnreadCount] = useState(0);
@@ -189,28 +192,38 @@ const Header: React.FC<HeaderProps> = ({
     }
   };
 
+  const handleLogoPress = React.useCallback(() => {
+    const state = navigation.getState();
+    if (state && state.index > 0) {
+      while (navigation.canGoBack()) {
+        navigation.goBack();
+      }
+      (navigation as any).navigate(SCREEN_NAMES.BOTTOM_TABS, {
+        screen: SCREEN_NAMES.WATCH_STACK,
+      });
+    } else {
+      (navigation as any).navigate(SCREEN_NAMES.BOTTOM_TABS, {
+        screen: SCREEN_NAMES.WATCH_STACK,
+      });
+    }
+  }, [navigation]);
+
+  const handleBarsiqPress = React.useCallback(() => {
+    setShowBarsiqModal(true);
+    setBarsiqUnreadCount(0);
+    NotificationService.clearBarsiqNotifications();
+    setTimeout(() => {
+      markBarsiqAsRead().catch((e: any) =>
+        console.log('Error marking barsiq read', e),
+      );
+    }, 600);
+  }, []);
+
   if (isMainTabsScreen) {
     return (
       <View style={[styles.container, styles.mainTabsHeader]}>
         <View style={styles.mainTabsLeft}>
-          <TouchableOpacity
-            onPress={() => {
-              const state = navigation.getState();
-              if (state && state.index > 0) {
-                while (navigation.canGoBack()) {
-                  navigation.goBack();
-                }
-                (navigation as any).navigate(SCREEN_NAMES.BOTTOM_TABS, {
-                  screen: SCREEN_NAMES.WATCH_STACK,
-                });
-              } else {
-                (navigation as any).navigate(SCREEN_NAMES.BOTTOM_TABS, {
-                  screen: SCREEN_NAMES.WATCH_STACK,
-                });
-              }
-            }}
-            activeOpacity={0.7}
-          >
+          <TouchableOpacity onPress={handleLogoPress} activeOpacity={0.7}>
             <FastImage
               source={logo360Sports as any}
               style={styles.mainLogo}
@@ -273,16 +286,7 @@ const Header: React.FC<HeaderProps> = ({
             <TouchableOpacity
               style={styles.barsiqContainer}
               activeOpacity={0.7}
-              onPress={() => {
-                setShowBarsiqModal(true);
-                setBarsiqUnreadCount(0);
-                NotificationService.clearBarsiqNotifications();
-                setTimeout(() => {
-                  markBarsiqAsRead().catch((e: any) =>
-                    console.log('Error marking barsiq read', e),
-                  );
-                }, 600);
-              }}
+              onPress={handleBarsiqPress}
             >
               <View style={{ overflow: 'hidden', borderRadius: scale(21) }}>
                 <FastImage

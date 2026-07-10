@@ -24,7 +24,9 @@ export const requestUserPermission = async (): Promise<boolean> => {
     } else {
       const messaging = getSafeMessaging();
       if (!messaging) {
-        Logger.warn('Firebase not initialized, skipping iOS notification permission');
+        Logger.warn(
+          'Firebase not initialized, skipping iOS notification permission',
+        );
         return false;
       }
       const authStatus = await requestPermission(messaging, {

@@ -17,7 +17,10 @@ import { forgotPassword } from '@features/auth/services';
 import { rootLoader } from '@store';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ForgotPasswordSchema, ForgotPasswordFormData } from '@core/validators/auth.validators';
+import {
+  ForgotPasswordSchema,
+  ForgotPasswordFormData,
+} from '@core/validators/auth.validators';
 
 const ForgotPasswordScreen = () => {
   const dispatch = useDispatch();
@@ -41,7 +44,10 @@ const ForgotPasswordScreen = () => {
     await requestForgotPassword(params, data.email);
   };
 
-  const requestForgotPassword = async (params: { email_address: string }, email: string) => {
+  const requestForgotPassword = async (
+    params: { email_address: string },
+    email: string,
+  ) => {
     dispatch(rootLoader(true));
 
     const apiResponse = await forgotPassword(params);
@@ -89,7 +95,10 @@ const ForgotPasswordScreen = () => {
         />
       </View>
       <View style={styles.bottomView}>
-        <PrimaryButton title={strings.submit} onPress={handleSubmit(handleForgotPassword)} />
+        <PrimaryButton
+          title={strings.submit}
+          onPress={handleSubmit(handleForgotPassword)}
+        />
       </View>
     </ScreenContainer>
   );

@@ -28,13 +28,15 @@ export const NativeLoader: React.FC<NativeLoaderProps> = ({
   titleStyle,
   containerStyle,
 }) => {
+  const noop = React.useCallback(() => {}, []);
+
   return (
     <Modal
       animationIn="fadeIn"
       animationOut="fadeOut"
       useNativeDriver
       isVisible={visible}
-      onBackButtonPress={() => {}}
+      onBackButtonPress={noop}
       style={{ margin: 0 }}
       backdropOpacity={bgTransparency}
       deviceHeight={screenHeight}

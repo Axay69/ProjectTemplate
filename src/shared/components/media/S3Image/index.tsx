@@ -23,10 +23,8 @@ import { SvgXml } from 'react-native-svg';
 import { downloadGenerateUrl } from '@features/profile';
 import { styles } from './styles';
 import { Portal } from '@gorhom/portal';
-import { createMMKV } from 'react-native-mmkv';
-import CustomImageZoom, {
-  CustomImageZoomRef,
-} from './CustomImageZoom';
+import { s3ImageCacheStorage } from '@core/storage';
+import CustomImageZoom, { CustomImageZoomRef } from './CustomImageZoom';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -174,7 +172,7 @@ export interface S3ImageProps {
   onPressOpenAvtarViewer?: () => void;
 }
 
-const s3Storage = createMMKV({ id: 's3-image-cache' });
+const s3Storage = s3ImageCacheStorage;
 
 const s3UrlCache = {
   has: (key: string) => s3Storage.contains(key),

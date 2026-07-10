@@ -108,7 +108,10 @@ export async function checkEmail(data: EmailPayload) {
 
 export async function sendVerificationEmail(data: EmailPayload) {
   try {
-    const response = await Api.POST(ENDPOINTS.AUTH.SEND_VERIFICATION_EMAIL, data);
+    const response = await Api.POST(
+      ENDPOINTS.AUTH.SEND_VERIFICATION_EMAIL,
+      data,
+    );
 
     if (response.success) {
       return { success: true, data: response.data, message: response.message };

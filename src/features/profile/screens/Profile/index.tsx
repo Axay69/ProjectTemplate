@@ -71,19 +71,27 @@ const ProfileScreen = () => {
     userInfo?.last_name ?? ''
   }`.trim();
 
+  const handleShowDelete = React.useCallback(() => {
+    setDeleteBottomSheetShow(true);
+  }, []);
+
+  const handleGoBack = React.useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
+
+  const handleNavigateEdit = React.useCallback(() => {
+    navigation.navigateToEditProfile();
+  }, [navigation]);
+
   return (
     <>
       <ScreenContainer>
         <TitleHeader
           leftIcon={leftBackIcon}
           title={strings.profile}
-          onPressLeft={() => {
-            navigation.goBack();
-          }}
+          onPressLeft={handleGoBack}
           rightIcon={editProfileIcon}
-          onPressRight={() => {
-            navigation.navigateToEditProfile();
-          }}
+          onPressRight={handleNavigateEdit}
         />
         <View style={styles.innerMainView}>
           <SpacerView height={25} />
@@ -114,7 +122,7 @@ const ProfileScreen = () => {
         <View style={styles.deleteAccountContainer}>
           <TouchableOpacity
             style={styles.deleteAccountButton}
-            onPress={() => setDeleteBottomSheetShow(true)}
+            onPress={handleShowDelete}
           >
             <Text style={styles.deleteAccountText}>
               {strings.delete_account.toUpperCase()}
